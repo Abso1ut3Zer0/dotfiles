@@ -1,0 +1,216 @@
+---
+- name: Machine setup
+  hosts: localhost
+  connection: local
+
+  vars_prompt:
+    - name: git_user_name
+      prompt: "Git user name"
+      private: false
+
+    - name: git_user_email
+      prompt: "Git user email"
+      private: false
+
+  vars:
+    dotfiles_dir: "{{ playbook_dir | dirname }}"
+    config_dir: "{{ dotfiles_dir }}/config"
+    home_dir: "{{ dotfiles_dir }}/home"
+    scripts_dir: "{{ dotfiles_dir }}/scripts"
+
+  tasks:
+    # ── Git config ──────────────────────────────────────────────
+    - name: Configure git user name
+      community.general.git_config:
+        name: user.name
+        scope: global
+        value: "{{ git_user_name }}"
+
+    - name: Configure git user email
+      community.general.git_config:
+        name: user.email
+        scope: global
+        value: "{{ git_user_email }}"
+
+    - name: Configure git editor
+      community.general.git_config:
+        name: core.editor
+        scope: global
+        value: nvim
+
+    # ── Package installation (Arch) ─────────────────────────────
+    - name: Install packages (Arch)
+      become: true
+      community.general.pacman:
+        name:
+          - neovim
+          - tmux
+          - ghostty
+          - ghostty-shell-integration
+          - ghostty-terminfo
+          - alacritty
+          - fzf
+          - ripgrep
+          - git
+          - zsh
+          - base-devel
+          - unzip
+          - curl
+          - wget
+        state: present
+      when: ansible_os_family == "Archlinux"
+
+    # ── Package installation (macOS) ────────────────────────────
+    - name: Install Homebrew packages (macOS)
+      community.general.homebrew:
+        name:
+          - neovim
+          - tmux
+          - ghostty
+          - alacritty
+          - fzf
+          - ripgrep
+          - git
+          - zsh
+        state: present
+      when: ansible_os_family == "Darwin"
+
+    # ── FiraCode Nerd Font ──────────────────────────────────────
+    - name: Install FiraCode Nerd Font (Arch)
+      become: true
+      community.general.pacman:
+        name: ttf-firacode-nerd
+        state: present
+      when: ansible_os_family == "Archlinux"
+
+    - name: Tap homebrew nerd fonts (macOS)
+      community.general.homebrew_tap:
+        name: homebrew/cask-fonts
+      when: ansible_os_family == "Darwin"
+
+    - name: Install FiraCode Nerd Font (macOS)
+      community.general.homebrew_cask:
+        name: font-fira-code-nerd-font
+        state: present
+      when: ansible_os_family == "Darwin"
+
+    # ── Oh My Zsh ───────────────────────────────────────────────
+    - name: Check if Oh My Zsh is installed
+      ansible.builtin.stat:
+        path: "{{ ansible_env.HOME }}/.oh-my-zsh"
+      register: omz
+
+    - name: Install Oh My Zsh
+      ansible.builtin.shell: >
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+      when: not omz.stat.exists
+
+    # ── Rust / Cargo ────────────────────────────────────────────
+    - name: Check if Rust is installed
+      ansible.builtin.stat:
+        path: "{{ ansible_env.HOME }}/.cargo/bin/rustc"
+      register: rust
+
+    - name: Install Rust
+      ansible.builtin.shell: >
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+      when: not rust.stat.exists
+
+    # ── Create directories ──────────────────────────────────────
+    - name: Ensure ~/.config directories exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - "{{ ansible_env.HOME }}/.config/nvim"
+        - "{{ ansible_env.HOME }}/.config/ghostty"
+        - "{{ ansible_env.HOME }}/.config/alacritty/themes/themes"
+        - "{{ ansible_env.HOME }}/.scripts"
+        - "{{ ansible_env.HOME }}/.vim/undodir"
+        - "{{ ansible_env.HOME }}/Projects"
+
+    # ── Symlink dotfiles ────────────────────────────────────────
+    - name: Symlink nvim config
+      ansible.builtin.file:
+        src: "{{ config_dir }}/nvim/{{ item }}"
+        dest: "{{ ansible_env.HOME }}/.config/nvim/{{ item }}"
+        state: link
+        force: true
+      loop:
+        - init.lua
+        - lua
+
+    - name: Symlink ghostty config
+      ansible.builtin.file:
+        src: "{{ config_dir }}/ghostty/config"
+        dest: "{{ ansible_env.HOME }}/.config/ghostty/config"
+        state: link
+        force: true
+
+    - name: Symlink alacritty config
+      ansible.builtin.file:
+        src: "{{ config_dir }}/alacritty/alacritty.toml"
+        dest: "{{ ansible_env.HOME }}/.config/alacritty/alacritty.toml"
+        state: link
+        force: true
+
+    - name: Symlink alacritty kanagawa theme
+      ansible.builtin.file:
+        src: "{{ config_dir }}/alacritty/themes/themes/kanagawa_dragon.toml"
+        dest: "{{ ansible_env.HOME }}/.config/alacritty/themes/themes/kanagawa_dragon.toml"
+        state: link
+        force: true
+
+    - name: Symlink tmux.conf
+      ansible.builtin.file:
+        src: "{{ home_dir }}/tmux.conf"
+        dest: "{{ ansible_env.HOME }}/.tmux.conf"
+        state: link
+        force: true
+
+    - name: Symlink zshrc
+      ansible.builtin.file:
+        src: "{{ home_dir }}/zshrc"
+        dest: "{{ ansible_env.HOME }}/.zshrc"
+        state: link
+        force: true
+
+    - name: Symlink zshenv
+      ansible.builtin.file:
+        src: "{{ home_dir }}/zshenv"
+        dest: "{{ ansible_env.HOME }}/.zshenv"
+        state: link
+        force: true
+
+    - name: Symlink tmux-sessionizer
+      ansible.builtin.file:
+        src: "{{ scripts_dir }}/tmux-sessionizer"
+        dest: "{{ ansible_env.HOME }}/.scripts/tmux-sessionizer"
+        state: link
+        force: true
+
+    - name: Ensure tmux-sessionizer is executable
+      ansible.builtin.file:
+        path: "{{ scripts_dir }}/tmux-sessionizer"
+        mode: "0755"
+
+    # ── Set default shell ───────────────────────────────────────
+    - name: Get zsh path
+      ansible.builtin.command: which zsh
+      register: zsh_path
+      changed_when: false
+
+    - name: Set zsh as default shell
+      become: true
+      ansible.builtin.user:
+        name: "{{ ansible_env.USER }}"
+        shell: "{{ zsh_path.stdout }}"
+
+    # ── Done ────────────────────────────────────────────────────
+    - name: Setup complete
+      ansible.builtin.debug:
+        msg: |
+          Setup complete!
+          - Open ghostty or alacritty
+          - Launch nvim (lazy.nvim will bootstrap on first run)
+          - Restart your shell or run: source ~/.zshrc

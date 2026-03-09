@@ -1,0 +1,59 @@
+# Font
+font-family = FiraCode Nerd Font
+font-size = 11
+
+# Window
+window-padding-x = 10
+window-padding-y = 15
+window-decoration = true
+maximize = true
+
+# Background
+background-opacity = 1
+background-image = /home/michaelhart/Pictures/wallhaven-po21lp.jpg
+background-image-fit = cover
+background-image-opacity = 0.10
+
+# Cursor
+cursor-style = block
+cursor-style-blink = true
+
+# Scrollback
+scrollback-limit = 10000
+
+# Mouse
+mouse-hide-while-typing = true
+mouse-scroll-multiplier = 0.35
+
+# Shell — launch tmux
+command = /usr/bin/zsh -l -c "tmux attach || tmux"
+
+# Clipboard
+copy-on-select = clipboard
+clipboard-paste-bracketed-safe = true
+
+# Keybinds
+keybind = alt+shift+v=paste_from_clipboard
+keybind = alt+shift+c=copy_to_clipboard
+
+# Kanagawa Dragon colors
+palette = 0=#0d0c0c
+palette = 1=#c4746e
+palette = 2=#8a9a7b
+palette = 3=#c4b28a
+palette = 4=#8ba4b0
+palette = 5=#a292a3
+palette = 6=#8ea4a2
+palette = 7=#C8C093
+palette = 8=#a6a69c
+palette = 9=#E46876
+palette = 10=#87a987
+palette = 11=#E6C384
+palette = 12=#7FB4CA
+palette = 13=#938AA9
+palette = 14=#7AA89F
+palette = 15=#c5c9c5
+background = 181616
+foreground = c5c9c5
+selection-background = 2d4f67
+selection-foreground = c8c093
