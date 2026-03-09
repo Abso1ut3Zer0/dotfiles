@@ -23,7 +23,7 @@ mouse-hide-while-typing = true
 mouse-scroll-multiplier = 0.35
 
 # Shell — launch tmux
-command = zsh -l -c "tmux attach || tmux"
+command = {{ zsh_path.stdout }} -l -c "tmux attach || tmux"
 
 # Clipboard
 copy-on-select = clipboard

@@ -113,6 +113,12 @@
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
       when: not rust.stat.exists
 
+    # ── Detect zsh path ───────────────────────────────────────────
+    - name: Get zsh path
+      ansible.builtin.command: which zsh
+      register: zsh_path
+      changed_when: false
+
     # ── Create directories ──────────────────────────────────────
     - name: Ensure ~/.config directories exist
       ansible.builtin.file:
@@ -137,19 +143,15 @@
         - init.lua
         - lua
 
-    - name: Symlink ghostty config
-      ansible.builtin.file:
-        src: "{{ config_dir }}/ghostty/config"
+    - name: Template ghostty config
+      ansible.builtin.template:
+        src: templates/ghostty.config.j2
         dest: "{{ ansible_env.HOME }}/.config/ghostty/config"
-        state: link
-        force: true
 
-    - name: Symlink alacritty config
-      ansible.builtin.file:
-        src: "{{ config_dir }}/alacritty/alacritty.toml"
+    - name: Template alacritty config
+      ansible.builtin.template:
+        src: templates/alacritty.toml.j2
         dest: "{{ ansible_env.HOME }}/.config/alacritty/alacritty.toml"
-        state: link
-        force: true
 
     - name: Symlink alacritty kanagawa theme
       ansible.builtin.file:
@@ -192,11 +194,6 @@
         mode: "0755"
 
     # ── Set default shell ───────────────────────────────────────
-    - name: Get zsh path
-      ansible.builtin.command: which zsh
-      register: zsh_path
-      changed_when: false
-
     - name: Set zsh as default shell
       become: true
       ansible.builtin.user:
