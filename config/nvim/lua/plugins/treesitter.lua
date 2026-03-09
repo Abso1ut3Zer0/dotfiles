@@ -8,13 +8,17 @@ return {
 				"python", "go", "rust", "zig", "elixir", "heex", "eex",
 				"c", "cpp", "html", "http", "solidity", "lua",
 				"vim", "vimdoc", "query", "gitcommit", "git_rebase",
+				"markdown", "markdown_inline",
 			},
 			sync_install = false,
 			auto_install = true,
-			highlight = {
-				enable = true,
-				additional_vim_regex_highlighting = false,
-			},
+		})
+
+		-- Enable treesitter highlighting for all buffers
+		vim.api.nvim_create_autocmd("FileType", {
+			callback = function()
+				pcall(vim.treesitter.start)
+			end,
 		})
 	end,
 }

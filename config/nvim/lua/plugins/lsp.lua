@@ -16,6 +16,9 @@ return {
 				callback = function(event)
 					local opts = { buffer = event.buf }
 
+					vim.api.nvim_set_hl(0, "@lsp.type.typeAlias.rust", { link = "Type" })
+					vim.api.nvim_set_hl(0, "@lsp.typemod.typeAlias.library.rust", { link = "Type" })
+
 					vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
 					vim.keymap.set("n", "<leader>gd", vim.lsp.buf.definition, opts)
 					vim.keymap.set("n", "<leader>gD", vim.lsp.buf.declaration, opts)
