@@ -57,6 +57,7 @@
           - unzip
           - curl
           - wget
+          - lazygit
         state: present
       when: ansible_os_family == "Archlinux"
 
@@ -72,6 +73,7 @@
           - ripgrep
           - git
           - zsh
+          - lazygit
         state: present
       when: ansible_os_family == "Darwin"
 
@@ -82,11 +84,6 @@
         name: ttf-firacode-nerd
         state: present
       when: ansible_os_family == "Archlinux"
-
-    - name: Tap homebrew nerd fonts (macOS)
-      community.general.homebrew_tap:
-        name: homebrew/cask-fonts
-      when: ansible_os_family == "Darwin"
 
     - name: Install FiraCode Nerd Font (macOS)
       community.general.homebrew_cask:
