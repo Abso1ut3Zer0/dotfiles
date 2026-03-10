@@ -72,7 +72,7 @@
           - dust
           - tokei
         state: present
-      when: ansible_os_family == "Archlinux"
+      when: ansible_facts['os_family'] == "Archlinux"
 
     # ── Package installation (macOS) ────────────────────────────
     - name: Install Homebrew packages (macOS)
@@ -106,13 +106,14 @@
           - tokei
           - watch
         state: present
-      when: ansible_os_family == "Darwin"
+      when: ansible_facts['os_family'] == "Darwin"
 
     - name: Install Docker Desktop (macOS)
       community.general.homebrew_cask:
         name: docker
         state: present
-      when: ansible_os_family == "Darwin"
+      when: ansible_facts['os_family'] == "Darwin"
+      ignore_errors: true
 
     # ── FiraCode Nerd Font ──────────────────────────────────────
     - name: Install FiraCode Nerd Font (Arch)
@@ -120,13 +121,13 @@
       community.general.pacman:
         name: ttf-firacode-nerd
         state: present
-      when: ansible_os_family == "Archlinux"
+      when: ansible_facts['os_family'] == "Archlinux"
 
     - name: Install FiraCode Nerd Font (macOS)
       community.general.homebrew_cask:
         name: font-fira-code-nerd-font
         state: present
-      when: ansible_os_family == "Darwin"
+      when: ansible_facts['os_family'] == "Darwin"
 
     # ── Oh My Zsh ───────────────────────────────────────────────
     - name: Check if Oh My Zsh is installed
