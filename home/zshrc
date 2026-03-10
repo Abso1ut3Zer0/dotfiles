@@ -15,9 +15,24 @@ alias vim="nvim"
 alias lg="lazygit"
 alias gs="git status"
 alias gd="git diff"
+alias cat="bat --paging=never"
+alias ls="eza"
+alias ll="eza -la"
+alias tree="eza --tree"
 
 export PATH="$PATH:$HOME/.scripts"
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+
+# Use GNU coreutils over macOS builtins
+if [[ "$(uname)" == "Darwin" ]]; then
+	export PATH="$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH"
+	export PATH="$(brew --prefix)/opt/gnu-sed/libexec/gnubin:$PATH"
+	export PATH="$(brew --prefix)/opt/gnu-tar/libexec/gnubin:$PATH"
+	export PATH="$(brew --prefix)/opt/gawk/libexec/gnubin:$PATH"
+	export PATH="$(brew --prefix)/opt/findutils/libexec/gnubin:$PATH"
+	export PATH="$(brew --prefix)/opt/grep/libexec/gnubin:$PATH"
+	export PATH="$(brew --prefix)/opt/make/libexec/gnubin:$PATH"
+fi
 
 bindkey -s ^f "tmux-sessionizer\n"

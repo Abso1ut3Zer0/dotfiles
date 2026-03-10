@@ -58,6 +58,16 @@
           - curl
           - wget
           - lazygit
+          - github-cli
+          - btop
+          - htop
+          - bat
+          - eza
+          - jq
+          - hyperfine
+          - perf
+          - docker
+          - smartmontools
         state: present
       when: ansible_os_family == "Archlinux"
 
@@ -74,6 +84,20 @@
           - git
           - zsh
           - lazygit
+          - gh
+          - btop
+          - htop
+          - bat
+          - eza
+          - jq
+          - hyperfine
+          - coreutils
+          - gnu-sed
+          - gnu-tar
+          - gawk
+          - findutils
+          - grep
+          - make
         state: present
       when: ansible_os_family == "Darwin"
 
