@@ -68,6 +68,9 @@
           - perf
           - docker
           - smartmontools
+          - fd
+          - dust
+          - tokei
         state: present
       when: ansible_os_family == "Archlinux"
 
@@ -98,6 +101,16 @@
           - findutils
           - grep
           - make
+          - fd
+          - dust
+          - tokei
+          - watch
+        state: present
+      when: ansible_os_family == "Darwin"
+
+    - name: Install Docker Desktop (macOS)
+      community.general.homebrew_cask:
+        name: docker
         state: present
       when: ansible_os_family == "Darwin"
 
