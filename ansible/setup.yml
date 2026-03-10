@@ -132,7 +132,7 @@
     # ── Oh My Zsh ───────────────────────────────────────────────
     - name: Check if Oh My Zsh is installed
       ansible.builtin.stat:
-        path: "{{ ansible_env.HOME }}/.oh-my-zsh"
+        path: "{{ ansible_facts['env']['HOME'] }}/.oh-my-zsh"
       register: omz
 
     - name: Install Oh My Zsh
@@ -143,7 +143,7 @@
     # ── Rust / Cargo ────────────────────────────────────────────
     - name: Check if Rust is installed
       ansible.builtin.stat:
-        path: "{{ ansible_env.HOME }}/.cargo/bin/rustc"
+        path: "{{ ansible_facts['env']['HOME'] }}/.cargo/bin/rustc"
       register: rust
 
     - name: Install Rust
@@ -163,18 +163,18 @@
         path: "{{ item }}"
         state: directory
       loop:
-        - "{{ ansible_env.HOME }}/.config/nvim"
-        - "{{ ansible_env.HOME }}/.config/ghostty"
-        - "{{ ansible_env.HOME }}/.config/alacritty/themes/themes"
-        - "{{ ansible_env.HOME }}/.scripts"
-        - "{{ ansible_env.HOME }}/.vim/undodir"
-        - "{{ ansible_env.HOME }}/Projects"
+        - "{{ ansible_facts['env']['HOME'] }}/.config/nvim"
+        - "{{ ansible_facts['env']['HOME'] }}/.config/ghostty"
+        - "{{ ansible_facts['env']['HOME'] }}/.config/alacritty/themes/themes"
+        - "{{ ansible_facts['env']['HOME'] }}/.scripts"
+        - "{{ ansible_facts['env']['HOME'] }}/.vim/undodir"
+        - "{{ ansible_facts['env']['HOME'] }}/Projects"
 
     # ── Symlink dotfiles ────────────────────────────────────────
     - name: Symlink nvim config
       ansible.builtin.file:
         src: "{{ config_dir }}/nvim/{{ item }}"
-        dest: "{{ ansible_env.HOME }}/.config/nvim/{{ item }}"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.config/nvim/{{ item }}"
         state: link
         force: true
       loop:
@@ -184,45 +184,45 @@
     - name: Template ghostty config
       ansible.builtin.template:
         src: templates/ghostty.config.j2
-        dest: "{{ ansible_env.HOME }}/.config/ghostty/config"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.config/ghostty/config"
 
     - name: Template alacritty config
       ansible.builtin.template:
         src: templates/alacritty.toml.j2
-        dest: "{{ ansible_env.HOME }}/.config/alacritty/alacritty.toml"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.config/alacritty/alacritty.toml"
 
     - name: Symlink alacritty kanagawa theme
       ansible.builtin.file:
         src: "{{ config_dir }}/alacritty/themes/themes/kanagawa_dragon.toml"
-        dest: "{{ ansible_env.HOME }}/.config/alacritty/themes/themes/kanagawa_dragon.toml"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.config/alacritty/themes/themes/kanagawa_dragon.toml"
         state: link
         force: true
 
     - name: Symlink tmux.conf
       ansible.builtin.file:
         src: "{{ home_dir }}/tmux.conf"
-        dest: "{{ ansible_env.HOME }}/.tmux.conf"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.tmux.conf"
         state: link
         force: true
 
     - name: Symlink zshrc
       ansible.builtin.file:
         src: "{{ home_dir }}/zshrc"
-        dest: "{{ ansible_env.HOME }}/.zshrc"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.zshrc"
         state: link
         force: true
 
     - name: Symlink zshenv
       ansible.builtin.file:
         src: "{{ home_dir }}/zshenv"
-        dest: "{{ ansible_env.HOME }}/.zshenv"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.zshenv"
         state: link
         force: true
 
     - name: Symlink tmux-sessionizer
       ansible.builtin.file:
         src: "{{ scripts_dir }}/tmux-sessionizer"
-        dest: "{{ ansible_env.HOME }}/.scripts/tmux-sessionizer"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.scripts/tmux-sessionizer"
         state: link
         force: true
 
@@ -235,7 +235,7 @@
     - name: Set zsh as default shell
       become: true
       ansible.builtin.user:
-        name: "{{ ansible_env.USER }}"
+        name: "{{ ansible_facts['env']['USER'] }}"
         shell: "{{ zsh_path.stdout }}"
 
     # ── Done ────────────────────────────────────────────────────
