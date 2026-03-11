@@ -13,7 +13,9 @@ return {
 				layout_strategy = "horizontal",
 				layout_config = {
 					preview_cutoff = 0,
-					preview_width = 0.55,
+					horizontal = {
+						preview_width = 0.55,
+					},
 				},
 			},
 			extensions = {
