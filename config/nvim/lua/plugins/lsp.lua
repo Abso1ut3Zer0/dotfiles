@@ -18,7 +18,7 @@ return {
 
 					vim.lsp.inlay_hint.enable(true)
 
-				vim.api.nvim_set_hl(0, "@lsp.type.typeAlias.rust", { link = "Type" })
+					vim.api.nvim_set_hl(0, "@lsp.type.typeAlias.rust", { link = "Type" })
 					vim.api.nvim_set_hl(0, "@lsp.typemod.typeAlias.library.rust", { link = "Type" })
 
 					vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
@@ -123,8 +123,16 @@ return {
 							capabilities = capabilities,
 							settings = {
 								["rust-analyzer"] = {
-									diagnostics = { enable = true },
+									diagnostics = {
+										enable = true,
+										enableExperimental = true,
+									},
 									checkOnSave = { command = "clippy" },
+									procMacro = { enable = true },
+									cargo = {
+										allFeatures = true,
+										loadOutDirsFromCheck = true,
+									},
 								},
 							},
 						})
