@@ -16,9 +16,7 @@ return {
 				callback = function(event)
 					local opts = { buffer = event.buf }
 
-					vim.lsp.inlay_hint.enable(true)
-
-					vim.api.nvim_set_hl(0, "@lsp.type.typeAlias.rust", { link = "Type" })
+						vim.api.nvim_set_hl(0, "@lsp.type.typeAlias.rust", { link = "Type" })
 					vim.api.nvim_set_hl(0, "@lsp.typemod.typeAlias.library.rust", { link = "Type" })
 
 					vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
