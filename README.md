@@ -69,14 +69,14 @@ The bootstrap script will:
 | Keybind | Action |
 |---------|--------|
 | `K` | Hover |
-| `<leader>gd` | Go to definition |
-| `<leader>gD` | Go to declaration |
-| `<leader>gi` | Go to implementation |
-| `<leader>go` | Go to type definition |
+| `gd` | Go to definition |
+| `gD` | Go to declaration |
+| `gi` | Go to implementation |
+| `go` | Go to type definition |
 | `<leader>gr` | References (telescope) |
-| `<leader>gs` | Signature help |
+| `gs` | Signature help |
 | `<leader>rn` | Rename |
-| `<leader>ca` | Code action |
+| `<leader>ca` / `<leader>k` | Code action |
 | `<leader>fm` | Format |
 | `<leader>e` | Diagnostics float |
 | `[d / ]d` | Prev/next diagnostic |
@@ -99,6 +99,25 @@ The bootstrap script will:
 | `<leader>gb` | Git branches (telescope) |
 | `<leader>ts` | Git worktrees |
 | `<leader>tn` | Create worktree |
+
+**Gitsigns (in-buffer):**
+
+| Keybind | Action |
+|---------|--------|
+| `]c / [c` | Next/prev hunk |
+| `<leader>hs` | Stage hunk |
+| `<leader>hr` | Reset hunk |
+| `<leader>hu` | Undo stage hunk |
+| `<leader>hp` | Preview hunk |
+| `<leader>tb` | Toggle inline blame |
+
+**Trouble:**
+
+| Keybind | Action |
+|---------|--------|
+| `<leader>xx` | Toggle diagnostics panel |
+| `<leader>xw` | Buffer diagnostics |
+| `<leader>xd` | Document symbols |
 
 **Editing:**
 
@@ -134,3 +153,48 @@ cd ~/dotfiles && git pull && ./bootstrap.sh
 ```
 
 Ansible is idempotent — it only changes what's needed.
+
+## Git Workflows in Neovim
+
+### Interactive Rebase
+
+**Using Neogit:**
+1. `<leader>nl` to open the log
+2. Move cursor to the commit you want to rebase onto
+3. Press `r` to open the rebase popup, then `i` for interactive rebase
+4. Neogit opens an editor buffer with the rebase todo list — reorder, squash, fixup, drop commits
+5. Save and close (`:wq`) to execute the rebase
+6. If conflicts arise, Neogit shows them in the status view (`<leader>ng`)
+
+**Using Diffview during rebase conflicts:**
+1. Start a rebase (via Neogit or command line)
+2. When conflicts occur, run `<leader>do` (`:DiffviewOpen`) — shows all conflicted files with side-by-side diffs
+3. Select a file to see a 3-panel view: LOCAL (yours) | REMOTE (theirs) | MERGED (result)
+4. Edit the merged file to resolve conflicts
+5. Stage resolved files and continue the rebase via `<leader>ng`
+
+### Merge Conflict Resolution
+
+1. `<leader>do` — opens Diffview showing all conflicted files in side-by-side view
+2. Navigate between files in the left panel
+3. Resolve conflicts in the merged buffer (right side)
+4. `:Gwrite` to stage the resolved file
+5. `<leader>dc` to close Diffview when done
+
+### Reviewing Diffs
+
+- `<leader>do` — see all uncommitted changes side-by-side
+- `<leader>df` — full history of the current file with diffs
+- `<leader>dh` — full history of the entire repo
+- `:DiffviewOpen main...HEAD` — compare current branch against main
+- `:DiffviewOpen HEAD~3` — see last 3 commits as diffs
+
+### PR Review
+
+For reviewing GitHub PRs with side-by-side diffs inside Neovim, consider adding [octo.nvim](https://github.com/pwntester/octo.nvim). It provides:
+- `Octo pr list` — browse PRs via telescope
+- `Octo review` — enter review mode with side-by-side diffs
+- Inline commenting and suggestions on diff hunks
+- Submit approve/request changes/comment reviews
+
+Requires `gh` CLI (already installed via ansible). See the [octo.nvim docs](https://github.com/pwntester/octo.nvim) for setup.
