@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+#
+# cheat — fuzzy-searchable personal command cheat sheets.
+#
+# Sheets are markdown files in cheats/ next to this script. Add a file
+# there and it shows up automatically — no registration needed.
+set -euo pipefail
+
+usage() {
+	cat <<'EOF'
+cheat — fuzzy-searchable personal command cheat sheets.
+
+  cheat             fzf picker with live preview; Enter prints the sheet
+  cheat <topic>     print a sheet directly        (e.g. cheat jq)
+  cheat -e <topic>  open a sheet in $EDITOR        (rendered via render-markdown)
+  cheat -l          list available topics
+EOF
+}
+
+# This script is symlinked into ~/.scripts; resolve back to the repo so we
+# find cheats/ regardless of where it's invoked from.
+script_path="$(readlink -f "${BASH_SOURCE[0]}")"
+cheat_dir="$(dirname "$script_path")/cheats"
+[[ -d "$cheat_dir" ]] || { echo "cheat: missing cheats dir at $cheat_dir" >&2; exit 1; }
+
+list_topics() {
+	local f
+	for f in "$cheat_dir"/*.md; do
+		[[ -e "$f" ]] || continue
+		basename "$f" .md
+	done | sort
+}
+
+print_sheet() {
+	if command -v bat >/dev/null 2>&1; then
+		bat --color=always --style=plain --language=markdown "$1"
+	else
+		cat "$1"
+	fi
+}
+
+edit=false
+case "${1:-}" in
+	-e|--edit) edit=true; shift ;;
+	-l|--list) list_topics; exit 0 ;;
+	-h|--help) usage; exit 0 ;;
+esac
+
+topic="${1:-}"
+
+# No topic given: fuzzy-pick one with a live preview.
+if [[ -z "$topic" ]]; then
+	command -v fzf >/dev/null 2>&1 || {
+		echo "cheat: fzf not found; pass a topic explicitly. Available:" >&2
+		list_topics >&2
+		exit 1
+	}
+	topic="$(list_topics | fzf --prompt='cheat> ' \
+		--preview "bat --color=always --style=plain --language=markdown '$cheat_dir'/{}.md 2>/dev/null || cat '$cheat_dir'/{}.md" \
+		--preview-window='right:68%')" || exit 0
+	[[ -n "$topic" ]] || exit 0
+fi
+
+file="$cheat_dir/$topic.md"
+[[ -f "$file" ]] || {
+	echo "cheat: no sheet for '$topic'. Available:" >&2
+	list_topics >&2
+	exit 1
+}
+
+if $edit; then
+	exec "${EDITOR:-nvim}" "$file"
+else
+	print_sheet "$file"
+fi

@@ -10,6 +10,11 @@ maximize = true
 
 # Background
 background-opacity = 1
+{% if ghostty_bg_image | length > 0 %}
+background-image = {{ ghostty_bg_image }}
+background-image-fit = {{ ghostty_bg_fit }}
+background-image-opacity = {{ ghostty_bg_opacity }}
+{% endif %}
 
 # Cursor
 cursor-style = block

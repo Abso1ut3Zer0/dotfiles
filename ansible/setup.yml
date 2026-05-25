@@ -12,11 +12,18 @@
       prompt: "Git user email"
       private: false
 
+    - name: ghostty_bg_image
+      prompt: "Ghostty background image path (blank for none)"
+      default: "{{ lookup('env', 'HOME') }}/Pictures/wallhaven-po21lp.jpg"
+      private: false
+
   vars:
     dotfiles_dir: "{{ playbook_dir | dirname }}"
     config_dir: "{{ dotfiles_dir }}/config"
     home_dir: "{{ dotfiles_dir }}/home"
     scripts_dir: "{{ dotfiles_dir }}/scripts"
+    ghostty_bg_fit: cover
+    ghostty_bg_opacity: "0.10"
 
   tasks:
     # ── Git config ──────────────────────────────────────────────
@@ -219,17 +226,21 @@
         state: link
         force: true
 
-    - name: Symlink tmux-sessionizer
+    - name: Ensure scripts are executable
       ansible.builtin.file:
-        src: "{{ scripts_dir }}/tmux-sessionizer"
-        dest: "{{ ansible_facts['env']['HOME'] }}/.scripts/tmux-sessionizer"
+        path: "{{ item }}"
+        mode: "0755"
+      with_fileglob:
+        - "{{ scripts_dir }}/*"
+
+    - name: Symlink scripts into ~/.scripts
+      ansible.builtin.file:
+        src: "{{ item }}"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.scripts/{{ item | basename }}"
         state: link
         force: true
-
-    - name: Ensure tmux-sessionizer is executable
-      ansible.builtin.file:
-        path: "{{ scripts_dir }}/tmux-sessionizer"
-        mode: "0755"
+      with_fileglob:
+        - "{{ scripts_dir }}/*"
 
     # ── Set default shell ───────────────────────────────────────
     - name: Set zsh as default shell

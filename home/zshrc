@@ -35,4 +35,10 @@ if [[ "$(uname)" == "Darwin" ]]; then
 	export PATH="$(brew --prefix)/opt/make/libexec/gnubin:$PATH"
 fi
 
+# fzf shell integration: CTRL-T (files), CTRL-R (history), ALT-C (cd), **<TAB> completion
+if command -v fzf >/dev/null 2>&1; then
+	source <(fzf --zsh)
+	export FZF_CTRL_T_OPTS="--preview 'bat --color=always --style=plain {} 2>/dev/null || ls -la {}'"
+fi
+
 bindkey -s ^f "tmux-sessionizer\n"
