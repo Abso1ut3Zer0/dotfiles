@@ -34,6 +34,10 @@ return {
 			{ "<leader>dc", "<cmd>DiffviewClose<CR>", desc = "Diffview close" },
 			{ "<leader>df", "<cmd>DiffviewFileHistory %<CR>", desc = "File history (current)" },
 			{ "<leader>dh", "<cmd>DiffviewFileHistory<CR>", desc = "File history (all)" },
+			{ "<leader>dp", function()
+				local base = vim.fn.input("Diff against: ", "origin/main")
+				if base ~= "" then vim.cmd("DiffviewOpen " .. base .. "...HEAD") end
+			end, desc = "Diffview PR vs base" },
 		},
 		opts = {
 			enhanced_diff_hl = true,
